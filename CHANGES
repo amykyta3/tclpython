@@ -1,0 +1,47 @@
+--- version 4.1 ---------------------------------------------------------------
+improved windows support by George Petasis, who created a page for
+providing binaries for various ActiveState releases (many thanks!):
+http://www.ellogon.org/petasis/index.php?option=com_content&task=view&id=27&Itemid=43
+- various fixes in the C syntax that caused errors in VC++ compiler
+- Makefile.vc included in distribution for compiling under Windows
+- fixes in package index files to ensure that the extension gets loaded
+--- version 4.0 ---------------------------------------------------------------
+allowed evaluation of Tcl code in parent Tcl interpreter from Python
+  interpreters (thanks to Daniel Savard)
+added tclpython.h file for possible use in extensions to tclpython
+allowed Tcl interpreter access from C code so tclpython can be extended
+included Tcl stubs checking macros in tclpython.c
+--- version 3.1 ---------------------------------------------------------------
+added Tcl stubs support (thanks to Georgios Petasis)
+removed non public Tcl namespace code in C source
+generated and tested on a Red Hat 9 system with gcc 3.3
+--- version 3.0 ---------------------------------------------------------------
+added an exec command on top of the eval command so that a patched python
+  interpreter is no longer required (WARNING: creates incompatibilities with
+  existing code: see upgrading section in HTML documentation)
+--- version 2.1 ---------------------------------------------------------------
+tclpython2 renamed to tclpython and updated for Python 2.2.1 as found
+  in a Redhat 8.0 distribution
+tclpython (for Python 1.5) dropped
+prevent automatic 'import site' on a new thread, since it makes the
+  program hang
+--- version 2.0.1 -------------------------------------------------------------
+errors from Python were not always caught and properly reported to the Tcl
+  interpreter
+tclpython2 binary rpm was wrongly compiled against another installation on my
+  computer, which caused string I/O module loading failure and a core dump
+--- version 2.0 ---------------------------------------------------------------
+allow multiple Python interpreters
+no longer requires the Python print command to pass data to the Tcl interpreter
+embedded Python interpreters can now send data to standard output or error
+  (useful for debuging, using the print function, for example)
+successfully tested against the Python thread library
+added tclpython2 rpm for Redhat python2 compatibility
+includes 1 line addition patch to the Python sources
+--- version 1.1 ---------------------------------------------------------------
+include interpreter name in error messages
+--- version 1.0.1 -------------------------------------------------------------
+eval wrongly returned the accumulated output of the python interpreter since it
+  was started
+--- version 1.0 ---------------------------------------------------------------
+single interpreter only

@@ -1,0 +1,48 @@
+If you are on a Redhat or Fedora machine, just use the rpms from
+http://jfontain.free.fr/, otherwise you will have to compile the
+library yourself, as described below.
+
+For Python 2.2 and above, the automatic 'import site' on a new thread
+is suppressed, since it makes the program hang. Note that if needed,
+you can always use 'import site' in your code, as described at the top
+of the Lib/site.py file.
+
+After compiling the Python code (actually, only the libpythonX.X.a is
+required), generate the tclpython library using:
+
+$ cc -shared -o tclpython.so.4.1 -fPIC -O2 -Wall -I/usr/include/python2.2 tclpython.c tclthread.c -L/usr/lib/python2.2/config -lpython2.2 -lpthread -lutil /usr/lib/libtclstub`echo 'puts $tcl_version' | tclsh`.a
+
+(for other Python versions, Tcl stubs support and platform examples,
+see the tclpython.c source file).
+
+Then copy the shared library above and the included pkgIndex.tcl file,
+to the following directory that you create:
+
+1)    /usr/lib/tclpython/
+  or:
+2)    /usr/local/lib/tclpython/
+  or:
+3)    /opt/tcltk/lib/tclpython/
+
+depending on your Tcl installation, as the following examples show:
+
+1) $ echo 'puts $auto_path' | tclsh
+   /usr/lib/tcl8.3 /usr/lib
+
+2) $ echo 'puts $auto_path' | tclsh
+   /usr/local/lib/tcl8.3 /usr/local/lib
+
+3) $ echo 'puts $auto_path' | tclsh8.4
+   /opt/tcltk/lib/tcl8.4 /opt/tcltk/lib
+
+the idea being that the tclpython directory is a sub-directory of one of
+the components of the auto path list.
+
+And that is it. To actually check that it works:
+
+$ tclsh
+% package require tclpython
+4.1
+% [python::interp new] eval 3/2.0
+1.5
+% exit

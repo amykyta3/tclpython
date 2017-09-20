@@ -1,0 +1,71 @@
+#------------------------------------------------------------------------------
+# makefile.vc --
+#
+#	Microsoft Visual C++ makefile for use with nmake.exe v1.62+ (VC++ 5.0+)
+# Georgios Petasis, petasis@iit.demokritos.gr
+#
+#
+#------------------------------------------------------------------------------
+
+## Location of Tcl
+TCL              = C:\Program Files\Tcl
+## Location of Python
+PYTHON           = C:\Program Files\Python24
+## Location of TclPython
+TCLPYTHON        = .
+TclPythonVersion = 4.1
+PythonVersion    = 2.4.2
+
+## No need to modify bellow this point...
+#!if "$(MSVCDIR)" == ""
+#MSG = ^
+#You'll need to run vcvars32.bat from Developer Studio, first, to setup^
+#the environment.  Jump to this line to read the new instructions.
+#!error $(MSG)
+#!endif
+
+!if !exist("makefile.vc")
+MSG = ^
+You must run this makefile only from the directory it is in.^
+Please `cd` to its location first.
+!error $(MSG)
+!endif
+
+cc32		= $(CC)   # built-in default.
+link32		= link
+lib32		= lib
+MKDIR           = mkdir
+MV              = move
+CP              = copy
+RM              = del
+RMDIR           = rmdir /S /Q
+
+### Include Directories:
+INCDIR = -I"$(TCL)\include" \
+	 -I"$(PYTHON)\include" \
+	 -I"$(TCLPYTHON)"
+
+LIBDIR = -libpath:"$(TCL)\lib" \
+	 -libpath:"$(PYTHON)\libs"
+
+### Declarations common to all compiler options
+cflags = -nologo -c -W3 -MT -GX -YX -FD -FpBuildTemp -O2 -Op -Gs \
+	 -D "WIN32" -D "NDEBUG" -D "_WINDOWS" -D "_MBCS" \
+	 -D "_USRDLL" -D "USE_TCL_STUBS"
+
+### Declarations common to all linker options
+lflags	= -nologo -machine:I386 -release -opt:ref -opt:icf,3 -dll \
+	  -incremental:no -nodefaultlib:MSVCRT.LIB
+
+all: tclpython clean
+
+tclpython:
+	$(cc32) $(cflags) $(INCDIR) $(TCLPYTHON)\tclpython.c \
+	                            $(TCLPYTHON)\tclthread.c
+	$(link32) $(lflags) \
+	-out:$(TCLPYTHON)\tclpython-$(TclPythonVersion)-$(PythonVersion).dll \
+	$(LIBDIR) tclstub84.lib tclpython.obj tclthread.obj
+
+clean:
+	$(RM) *.pch *.idb *.obj *.exp hs_err_*.log *.pdb *.py \
+	    *.lib *.exp

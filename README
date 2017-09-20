@@ -1,0 +1,42 @@
+tclpython version 4.1: a Python package for Tcl
+
+This package allows the execution of Python (version 2.2 or above)
+code from a Tcl interpreter, as in:
+
+
+    package require tclpython 4.1
+    set interpreter [python::interp new]
+    $interpreter exec {print("Hello World")}
+    puts [$interpreter eval 3/2.0]
+    python::interp delete $interpreter
+
+
+You can actually create several Python interpreters this way, if the
+tclpython package was linked against a Python library compiled with
+threads support, otherwise only 1 Python interpreter can exist at a
+time.
+
+Starting with version 4.1, you can also access and use the parent Tcl
+interpreter from a Python interpreter:
+
+    package require tclpython 4.1
+    set interpreter [python::interp new]
+    puts [$interpreter eval {tcl.eval('clock format [clock seconds]')}]
+    python::interp delete $interpreter
+
+You should pay attention to space with the python interpreter. The
+line in the sample will work but this one will not:
+
+    puts [$interpreter eval { tcl.eval('clock format [clock seconds]') }]
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Jean-Luc Fontaine  mailto:jfontain@free.fr  http://jfontain.free.fr/
