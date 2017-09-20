@@ -60,10 +60,10 @@ lflags	= -nologo -machine:I386 -release -opt:ref -opt:icf,3 -dll \
 all: tclpython clean
 
 tclpython:
-	$(cc32) $(cflags) $(INCDIR) $(TCLPYTHON)\tclpython.c \
-	                            $(TCLPYTHON)\tclthread.c
+	$(cc32) $(cflags) $(INCDIR) src\tclpython.c \
+	                            src\tclthread.c
 	$(link32) $(lflags) \
-	-out:$(TCLPYTHON)\tclpython-$(TclPythonVersion)-$(PythonVersion).dll \
+	-out:tclpython-$(TclPythonVersion)-$(PythonVersion).dll \
 	$(LIBDIR) tclstub84.lib tclpython.obj tclthread.obj
 
 clean:

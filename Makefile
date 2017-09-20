@@ -25,8 +25,8 @@ LDFLAGS+= -lpthread -lutil
 LDFLAGS+= $(TCLSTUB_LIB)
 
 
-SRC:= tclpython.c
-SRC+= tclthread.c
+SRC:= src/tclpython.c
+SRC+= src/tclthread.c
 
 #===============================================================================
 
@@ -35,7 +35,7 @@ all:$(LIBRARY)
 install: $(LIBRARY)
 	mkdir -p $(INSTALL_DIR)/$(TCL_PKG_NAME)
 	cp $(LIBRARY) $(INSTALL_DIR)/$(TCL_PKG_NAME)
-	cp pkgIndex.tcl $(INSTALL_DIR)/$(TCL_PKG_NAME)
+	cp pkg/pkgIndex.tcl $(INSTALL_DIR)/$(TCL_PKG_NAME)
 
 uninstall:
 	rm -rf $(INSTALL_DIR)/$(TCL_PKG_NAME)
