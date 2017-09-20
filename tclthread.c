@@ -7,7 +7,7 @@
 #ifdef WIN32
   #define XSTRING(s) #s
 #else
-  #include <symcat.h>
+  //#include <symcat.h>
 #endif
 #include <limits.h>
 #include <string.h>
@@ -33,7 +33,9 @@ static void ThreadErrorProc(Tcl_Interp *interpreter)
  * with static functions under Visual C++ .NET.*/
     char buffer[15];
 #else
-    char buffer[strlen(XSTRING(LONG_MAX))];
+    #warning "FIXME - number of characters needed to store largest long in decimal"
+    char buffer[15];
+    //char buffer[strlen(XSTRING(LONG_MAX))];
 #endif
     CONST char *errorInformation;
     Tcl_Channel errorChannel;
