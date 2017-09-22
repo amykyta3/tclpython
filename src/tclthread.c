@@ -4,12 +4,6 @@
 /* $Id: tclthread.c,v 1.2 2006/03/05 17:41:53 jfontain Exp $ */
 
 
-#ifdef WIN32
-  #define XSTRING(s) #s
-#else
-  //#include <symcat.h>
-#endif
-#include <limits.h>
 #include <string.h>
 #include <tcl.h>
 #include "tclpython.h"
@@ -26,17 +20,7 @@ typedef struct ThreadEvent {                        /* copied from threadCmd.c i
 
 static void ThreadErrorProc(Tcl_Interp *interpreter)
 {
-#ifdef WIN32
-/* George Petasis, 21 Feb 2006:
- * Unfortunatelly, I cannot find a way to measure the LONG_MAX characters
- * with Visual C++ preprocessor. char buffer[strlen("")] does nto seem to work
- * with static functions under Visual C++ .NET.*/
-    char buffer[15];
-#else
-    #warning "FIXME - number of characters needed to store largest long in decimal"
-    char buffer[15];
-    //char buffer[strlen(XSTRING(LONG_MAX))];
-#endif
+    char buffer[sizeof(Tcl_ThreadId)*2+1];
     CONST char *errorInformation;
     Tcl_Channel errorChannel;
 
@@ -46,8 +30,8 @@ static void ThreadErrorProc(Tcl_Interp *interpreter)
     }
     errorChannel = Tcl_GetStdChannel(TCL_STDERR);
     if (errorChannel == NULL) return;
-    sprintf(buffer, "%ld", (long)CURRENTTHREAD);
-    Tcl_WriteChars(errorChannel, "Error from thread ", -1);
+    sprintf(buffer, "%lX", (long)CURRENTTHREAD);
+    Tcl_WriteChars(errorChannel, "Error from thread 0x", -1);
     Tcl_WriteChars(errorChannel, buffer, -1);
     Tcl_WriteChars(errorChannel, "\n", 1);
     Tcl_WriteChars(errorChannel, errorInformation, -1);
