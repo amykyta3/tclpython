@@ -1,62 +1,29 @@
-
-#===============================================================================
-#PYTHON_VERSION=2.7
-PYTHON_VERSION=3.5m
+PYTHON2_VERSION=2.7
+PYTHON3_VERSION=3.5m
 INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
 
-TCL_PKG_NAME=tclpython
-TCL_PKG_VERSION=4.1
 
-#===============================================================================
-TCL_VERSION=$(shell echo 'puts $\$$tcl_version' | tclsh)
+TCLPYTHON_ARGS=TCL_PKG_NAME=tclpython PYTHON_VERSION=$(PYTHON2_VERSION) INSTALL_DIR=$(INSTALL_DIR)
+TCLPYTHON3_ARGS=TCL_PKG_NAME=tclpython3 PYTHON_VERSION=$(PYTHON3_VERSION) INSTALL_DIR=$(INSTALL_DIR)
 
-OUTPUT_DIR=pkg/
-LIBRARY:= $(TCL_PKG_NAME).so.$(TCL_PKG_VERSION)
-INCLUDES:= /usr/include/python$(PYTHON_VERSION) /usr/include/tcl$(TCL_VERSION)
-CFLAGS:= -O2 -Wall -fPIC -DUSE_TCL_STUBS
-LDFLAGS:= -shared -s
-LDFLAGS+= -lpython$(PYTHON_VERSION)
-LDFLAGS+= -lpthread -lutil
-LDFLAGS+= -ltclstub$(TCL_VERSION)
+all:
+	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS)
+	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS)
 
-SRC:= src/tclpython.c
-SRC+= src/tclthread.c
+test:
+	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) test
+	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) test
 
-#===============================================================================
-
-all:$(OUTPUT_DIR)$(LIBRARY)
-
-test: $(OUTPUT_DIR)$(LIBRARY)
-	TCLLIBPATH=$(OUTPUT_DIR) tclsh test/test.tcl
-
-install: $(OUTPUT_DIR)$(LIBRARY)
-	cp -r $(OUTPUT_DIR) $(INSTALL_DIR)/$(TCL_PKG_NAME)
+install:
+	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) install
+	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) install
 
 uninstall:
-	rm -rf $(INSTALL_DIR)/$(TCL_PKG_NAME)
-
-#===============================================================================
-OBJECTS:= $(addsuffix .o,$(basename $(SRC)))
-DEPEND:= $(OBJECTS:.o=.d)
-
-# Generate Dependencies
-%.d: %.c
-	@$(CC) -MM -MT $(@:.d=.o) -MT $@  $(addprefix -I,$(INCLUDES)) $(CFLAGS) $< >$@
-
-# C Compile
-%.o: %.c
-	$(CC) $(addprefix -I,$(INCLUDES)) $(CFLAGS) -c -o $@ $<
-	
-# Link
-$(OUTPUT_DIR)$(LIBRARY): $(OBJECTS)
-	@mkdir -p $(dir $@)
-	$(CC) -o $@ $^ $(LDFLAGS)
-	
-ifneq ($(MAKECMDGOALS), clean)
-  -include $(DEPEND)
-endif
+	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) uninstall
+	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) uninstall
 
 clean:
-	rm -rf $(OBJECTS) $(DEPEND) $(OUTPUT_DIR)$(LIBRARY)
+	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) clean
+	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) clean
 
-.PHONY: all test install uninstall clean
+.PHONY:all test install uninstall clean

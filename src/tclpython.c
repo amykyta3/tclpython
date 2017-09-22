@@ -459,7 +459,13 @@ EXTERN int Tclpython_Init(Tcl_Interp *interpreter)
     mainInterpreter = interpreter;
     mainThread = CURRENTTHREAD;
     newIdentifier = 0;
-    Tcl_CreateObjCommand(interpreter, "::python::interp", command, 0, 0);
-    Py_NoSiteFlag = 1;                      /* suppress automatic 'import site' to prevent interpreter from hanging on new thread */
-    return Tcl_PkgProvide(interpreter, "tclpython", "4.1");
+    #if PY_MAJOR_VERSION >= 3
+        Tcl_CreateObjCommand(interpreter, "::python3::interp", command, 0, 0);
+        Py_NoSiteFlag = 1;// suppress automatic 'import site' to prevent interpreter from hanging on new thread 
+        return Tcl_PkgProvide(interpreter, "tclpython3", "4.1");
+    #else
+        Tcl_CreateObjCommand(interpreter, "::python::interp", command, 0, 0);
+        Py_NoSiteFlag = 1;// suppress automatic 'import site' to prevent interpreter from hanging on new thread 
+        return Tcl_PkgProvide(interpreter, "tclpython", "4.1");
+    #endif
 }

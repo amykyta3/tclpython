@@ -1,3 +1,5 @@
+build_tclpython
+build_tclpython3
 *.so.*
 **/*.d
 **/*.o
