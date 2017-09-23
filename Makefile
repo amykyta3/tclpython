@@ -1,29 +1,74 @@
-PYTHON2_VERSION=2.7
-PYTHON3_VERSION=3.5m
+# Override PKG_NAME to tclpython or tclpython3
+PKG_NAME=tclpython
+PKG_VERSION=4.1
+
 INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
 
+#===============================================================================
+ifeq ($(PKG_NAME),tclpython)
+	PYTHON_CONFIG=python2-config
+else ifeq ($(PKG_NAME),tclpython3)
+	PYTHON_CONFIG=python3-config
+endif
 
-TCLPYTHON_ARGS=TCL_PKG_NAME=tclpython PYTHON_VERSION=$(PYTHON2_VERSION) INSTALL_DIR=$(INSTALL_DIR)
-TCLPYTHON3_ARGS=TCL_PKG_NAME=tclpython3 PYTHON_VERSION=$(PYTHON3_VERSION) INSTALL_DIR=$(INSTALL_DIR)
+BUILD_DIR=build_$(PKG_NAME)
+OUTPUT_DIR=$(BUILD_DIR)/$(PKG_NAME)
+LIBRARY:= $(PKG_NAME).so.$(PKG_VERSION)
 
-all:
-	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS)
-	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS)
+TCL_VERSION=$(shell echo 'puts $\$$tcl_version' | tclsh)
+CFLAGS:= -O2 -Wall -fPIC -DUSE_TCL_STUBS
+CFLAGS+= $(shell $(PYTHON_CONFIG) --includes)
+CFLAGS+= -I/usr/include/tcl$(TCL_VERSION)
+LDFLAGS:= -shared -s
+LDFLAGS+= $(shell $(PYTHON_CONFIG) --libs)
+LDFLAGS+= -ltclstub$(TCL_VERSION)
 
-test:
-	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) test
-	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) test
+SRC:= src/tclpython.c
+SRC+= src/tclthread.c
 
-install:
-	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) install
-	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) install
+PKG_FILES:=pkgIndex.tcl
+#===============================================================================
+
+all:package
+
+test: package
+	TCLLIBPATH=$(OUTPUT_DIR) tclsh test/test.tcl $(PKG_NAME)
+
+install: package
+	cp -r $(OUTPUT_DIR) $(INSTALL_DIR)/$(PKG_NAME)
 
 uninstall:
-	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) uninstall
-	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) uninstall
+	rm -rf $(INSTALL_DIR)/$(PKG_NAME)
+
+#===============================================================================
+OBJECTS:= $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(basename $(SRC))))
+DEPEND:= $(OBJECTS:.o=.d)
+
+# Generate Dependencies
+$(BUILD_DIR)/%.d: %.c
+	@mkdir -p $(dir $@)
+	@$(CC) -MM -MT $(@:.d=.o) -MT $@ $(CFLAGS) $< >$@
+
+# C Compile
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
+	
+# Link
+$(OUTPUT_DIR)/$(LIBRARY): $(OBJECTS)
+	@mkdir -p $(dir $@)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+$(OUTPUT_DIR)/$(PKG_FILES):pkg/$(PKG_NAME)/$(PKG_FILES)
+	cp -t $(dir $@) $^
+	
+package: $(OUTPUT_DIR)/$(LIBRARY) $(OUTPUT_DIR)/$(PKG_FILES)
+
+ifneq ($(MAKECMDGOALS), clean)
+  -include $(DEPEND)
+endif
 
 clean:
-	$(MAKE) -f tclpython.mk $(TCLPYTHON_ARGS) clean
-	$(MAKE) -f tclpython.mk $(TCLPYTHON3_ARGS) clean
+	rm -rf $(BUILD_DIR)
 
-.PHONY:all test install uninstall clean
+.PHONY: all test install uninstall clean package
