@@ -19,57 +19,11 @@ $ cc -fpic -I/usr/local/include/python -I/usr/local/include/tcltk/tcl8.3 -c tclp
 $ cc -fpic -I/usr/local/include/tcltk/tcl8.3 -c tclthread.c
 $ ld -o tclpython.so -Bshareable -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/share/python/config tclpython.o tclthread.o -lpython -lutil -lreadline -ltermcap -lcrypt -lgmp -lgdbm -lpq -lz -ltcl83 -ltk83 -lX11
 
-Patched for Python 3 with respect to https://github.com/facebook/fbthrift/blob/master/thrift/lib/py/protocol/fastbinary.c
-
 */
 
 #include <Python.h>
 #include <tcl.h>
-
-#if PY_MAJOR_VERSION >= 3
-    #define PyInt_FromLong PyLong_FromLong
-    #define PyInt_AsLong PyLong_AsLong
-    #define PyString_FromStringAndSize PyBytes_FromStringAndSize
-#else
-    #include <cStringIO.h>
-#endif
-
 #include "tclpython.h"
-
-// Mostly copied from cStringIO.c
-#if PY_MAJOR_VERSION >= 3
-
-/** io module in python3. */
-static PyObject* Python3IO;
-
-typedef struct {
-  PyObject_HEAD
-  char *buf;
-  Py_ssize_t pos, string_size;
-} IOobject;
-
-#define IOOOBJECT(O) ((IOobject*)(O))
-
-static int
-IO__opencheck(IOobject *self) {
-    if (!self->buf) {
-        PyErr_SetString(PyExc_ValueError,
-                        "I/O operation on closed file");
-        return 0;
-    }
-    return 1;
-}
-
-static PyObject *
-IO_cgetval(PyObject *self) {
-    if (!IO__opencheck(IOOOBJECT(self))) return NULL;
-    assert(IOOOBJECT(self)->pos >= 0);
-    return PyBytes_FromStringAndSize(((IOobject*)self)->buf,
-                                     ((IOobject*)self)->pos);
-}
-#endif
-
-/* -- PYTHON MODULE SETUP STUFF --- */
 
 static PyObject *pythonTclEvaluate(PyObject *self, PyObject *args);
 
@@ -137,12 +91,9 @@ static Tcl_ThreadId mainThread;                                 /* needed for Py
 static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int numberOfArguments, Tcl_Obj * CONST arguments[])
 {
     intptr_t identifier;
-    PyObject *output;
-    PyObject *message;
     PyObject *result;
     PyObject *globals;
     char *string = 0;
-    Py_ssize_t length;
     Tcl_Obj *object;
     struct Tcl_HashEntry *entry;
     unsigned evaluate;
@@ -181,27 +132,8 @@ static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int
     /* choose start token depending on whether this is an evaluation or an execution: */
     result = PyRun_String(Tcl_GetString(arguments[2]), (evaluate? Py_eval_input: Py_file_input), globals, globals);
     if (result == 0) {                                                                                        /* an error occured */
-#if PY_MAJOR_VERSION >= 3
-        output = PyObject_CallMethod(Python3IO, "BytesIO", "()");
-#else
-        output = PycStringIO->NewOutput(1024);               /* use a reasonable initial size but big enough to handle most cases */
-#endif
-        PySys_SetObject("sys.stderr", output);                                                /* capture all interpreter error output */
-        PyErr_Print();                                            /* so that error is printed on standard error, redirected above */
-#if PY_MAJOR_VERSION >= 3
-        message = IO_cgetval(output);
-        string = PyBytes_AsString(message);
-        length = (string == NULL) ? 0 : strlen(string);
-#else
-        message = PycStringIO->cgetvalue(output);
-        string = PyString_AsString(message);
-        length = PyString_Size(message);
-#endif
-        if ((length > 0) && (string[length - 1] == '\n')) length--;              /* eventually remove trailing new line character */
+        PyErr_Print();
         object = Tcl_NewObj();
-        Tcl_AppendStringsToObj(object, Tcl_GetString(arguments[0]), ": ", 0);                    /* identify interpreter in error */
-        Tcl_AppendObjToObj(object, Tcl_NewStringObj(string, length));
-        Py_DECREF(output);
     } else {
         if (evaluate) {
 #if PY_MAJOR_VERSION >= 3
@@ -293,33 +225,15 @@ static int newInterpreter(Tcl_Interp *interpreter)
         return TCL_ERROR;
     } else {
         Py_Initialize();                                                                           /* initialize main interpreter */
-#if PY_MAJOR_VERSION >= 3 
-        Python3IO = PyImport_ImportModule("io");
-#else
-        PycString_IMPORT;
-#endif
     }
     Tcl_SetHashValue(Tcl_CreateHashEntry(&threadStates, (ClientData)identifier, &created), 0);
 #else
     if (existingInterpreters == 0) {
         Py_Initialize();                                                                           /* initialize main interpreter */
         PyEval_InitThreads();                                               /* initialize and acquire the global interpreter lock */
-#if PY_MAJOR_VERSION >= 3 
-        Python3IO = PyImport_ImportModule("io");
-#else
-        PycString_IMPORT;
-#endif
         globalState = PyThreadState_Swap(0);                                                            /* save the global thread */
     } else {
         PyEval_AcquireLock();                                           /* needed in order to be able to create a new interpreter */
-    }
-#if PY_MAJOR_VERSION >= 3
-    if (Python3IO == 0) {                                              /* make sure string input/output is properly initialized */
-#else
-    if (PycStringIO == 0) {                                              /* make sure string input/output is properly initialized */
-#endif
-        Tcl_SetResult(interpreter, "fatal error: could not initialize Python string input/output module", TCL_STATIC);
-        return TCL_ERROR;
     }
     state = Py_NewInterpreter();          /* hangs here if automatic 'import site' on a new thread is allowed (set Py_NoSiteFlag) */
     if (state == 0) {
