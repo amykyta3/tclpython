@@ -1,8 +1,14 @@
+puts "---- Package search paths ----"
+foreach p $auto_path {
+    puts "$p"
+}
 
 if {$argc != 1} {
     error "Must specify 'tclpython or tclpython3'"
 }
 
+#===============================================================================
+puts "---- Loading package [lindex $argv 0] ----"
 switch [lindex $argv 0] {
     tclpython {
         package require tclpython
@@ -13,28 +19,31 @@ switch [lindex $argv 0] {
     tclpython3 {
         package require tclpython3
         set interp [python3::interp new]
-        set python python3
+        if {$::tcl_platform(platform) == "windows"} {
+            # Windows does not distinguish between Python versions
+            set python python
+        } else {
+            set python python3
+        }
     }
     
     default {
         error "Invalid package '[lindex $argv 0] '"
     }
 }
+puts "OK"
 
-
-proc assert condition {
-    if {![uplevel 1 expr $condition]} {
-        return -code error "assertion failed: $condition"
-    }
-}
-
-# Verify python version
+#===============================================================================
+puts "---- Verifying python version ----"
 $interp exec {import sys}
 set expected [exec $python -c {import sys;print('%d.%d.%d'%sys.version_info[0:3])}]
 set actual [$interp eval {"%d.%d.%d" % sys.version_info[0:3]}]
 if {$expected != $actual} {error "version check"}
+puts "OK"
 
-# Test exception handler
+#===============================================================================
+puts "---- Testing exception handler ----"
 catch {
     $interp exec {raise Exception}
 }
+puts "OK"

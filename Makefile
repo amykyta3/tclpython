@@ -26,7 +26,6 @@ LDFLAGS+= -ltclstub$(TCL_VERSION)
 SRC:= src/tclpython.c
 SRC+= src/tclthread.c
 
-PKG_FILES:=pkgIndex.tcl
 #===============================================================================
 
 all:package
@@ -59,10 +58,10 @@ $(OUTPUT_DIR)/$(LIBRARY): $(OBJECTS)
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-$(OUTPUT_DIR)/$(PKG_FILES):pkg/$(PKG_NAME)/$(PKG_FILES)
+$(OUTPUT_DIR)/pkgIndex.tcl:pkg/$(PKG_NAME)/pkgIndex.tcl
 	cp -t $(dir $@) $^
 	
-package: $(OUTPUT_DIR)/$(LIBRARY) $(OUTPUT_DIR)/$(PKG_FILES)
+package: $(OUTPUT_DIR)/$(LIBRARY) $(OUTPUT_DIR)/pkgIndex.tcl
 
 ifneq ($(MAKECMDGOALS), clean)
   -include $(DEPEND)

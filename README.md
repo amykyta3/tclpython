@@ -23,15 +23,21 @@ puts [$interpreter eval 3/2.0]
 python::interp delete $interpreter
 ```
 
-# Installing
+## Installing (Linux)
 
-## 1. Install Dependencies
+### 1. Install Dependencies
+
+#### Debian
 ```bash
-sudo apt-get update
 sudo apt-get install python-dev python3-dev tcl-dev
 ```
 
-## 2. Determine install path
+#### Red Hat
+```bash
+sudo yum install python-devel python3-devel tcl-devel
+```
+
+### 2. Determine install path
 Tcl package installation paths vary depending on the platform.
 Pick one that looks right from the output of the following:
 
@@ -39,21 +45,24 @@ Pick one that looks right from the output of the following:
 echo 'foreach p $auto_path {puts $p}' | tclsh
 ```
 
-## 3. Compile from source
+### 3. Compile from source
 Installations of the package for Python 2 and 3 can coexist.
 
-**For Python 2:**
+#### For Python 2:
 
 ```bash
 make
 make install INSTALL_DIR=path/from/step/2
 ```
-**For Python 3:**
+#### For Python 3:
 
 ```bash
 make TCL_PKG=tclpython3
 make install TCL_PKG=tclpython3 INSTALL_DIR=path/from/step/2
 ```
+
+## Installing (Windows)
+See [msvc/README.md](msvc/README.md)
 
 ---
 *Jean-Luc Fontaine  mailto:jfontain@free.fr  http://jfontain.free.fr/*

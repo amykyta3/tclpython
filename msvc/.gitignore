@@ -1,0 +1,3 @@
+*.idb
+build_tclpython
+build_tclpython3
