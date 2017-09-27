@@ -39,10 +39,17 @@ sudo yum install python-devel python3-devel tcl-devel
 
 ### 2. Determine install path
 Tcl package installation paths vary depending on the platform.
-Pick one that looks right from the output of the following:
+
+Either pick one that looks right from the output of the following:
 
 ```bash
 echo 'foreach p $auto_path {puts $p}' | tclsh
+```
+
+... or create a new location, and add it to the `TCLLIBPATH` environment variable:
+
+```bash
+export TCLLIBPATH=$TCLLIBPATH:/path/to/my/tcl/packages
 ```
 
 ### 3. Compile from source
@@ -63,6 +70,3 @@ make install TCL_PKG=tclpython3 INSTALL_DIR=path/from/step/2
 
 ## Installing (Windows)
 See [msvc/README.md](msvc/README.md)
-
----
-*Jean-Luc Fontaine  mailto:jfontain@free.fr  http://jfontain.free.fr/*

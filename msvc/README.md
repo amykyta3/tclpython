@@ -14,14 +14,22 @@ Make sure paths to all installations are correct in your environment.
 
 In `start_msvc_shell.bat`, edit variables:
 
-* `vcbuildtools`
+* vcbuildtools
+    * Path to the `vcbuildtools.bat` script located in the MS Visual C++ Build Tools intstallation
 
 In `Makefile`, edit variables:
 
-* `TCL_PATH`
-* `PYTHON2_PATH`
-* `PYTHON3_PATH`
-* `INSTALL_DIR`
+* TCL_PATH
+    * Path to root of Tcl installation
+* PYTHON2_PATH
+    * Path to root of Python 2.x.x installation
+* PYTHON3_PATH
+    * Path to root of Python 3.x.x installation
+* INSTALL_DIR
+    * Destination of the tclpython Tcl package
+    * Either pick one that looks right from the output of the following Tcl command:
+        `foreach p $auto_path {puts $p}`
+    * ... or create a new location, and add it to the `TCLLIBPATH` environment variable.
 
 ## 3. Compile
 
