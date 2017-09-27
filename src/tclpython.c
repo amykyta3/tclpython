@@ -1,25 +1,3 @@
-/* copyright (C) 2001 Jean-Luc Fontaine (mailto:jfontain@free.fr) */
-/* this library is free software: please read the README file enclosed in this package */
-
-/* $Id: tclpython.c,v 1.25 2006/03/05 17:41:53 jfontain Exp $ */
-
-/*
-
-Provide Python interpreters accessible from Tcl as a package named "tclpython".
-
-Created using the following command:
-
-# Linux Red Hat:
-$ cc -shared -o tclpython.so.4.1 -s -fPIC -O2 -Wall -I/usr/include/python2.3 tclpython.c tclthread.c -L/usr/lib/python2.3/config -lpython2.3 -lpthread -lutil
-# with Tcl stubs enabled:
-$ cc -shared -o tclpython.so.4.1 -s -fPIC -O2 -Wall -DUSE_TCL_STUBS -I/usr/include/python2.3 tclpython.c tclthread.c /usr/lib/libtclstub8.3.a -L/usr/lib/python2.3/config -lpython2.3 -lpthread -lutil
-
-# BSD (example, thanks to Dave Bodenstab):
-$ cc -fpic -I/usr/local/include/python -I/usr/local/include/tcltk/tcl8.3 -c tclpython.c
-$ cc -fpic -I/usr/local/include/tcltk/tcl8.3 -c tclthread.c
-$ ld -o tclpython.so -Bshareable -L/usr/X11R6/lib -L/usr/local/lib -L/usr/local/share/python/config tclpython.o tclthread.o -lpython -lutil -lreadline -ltermcap -lcrypt -lgmp -lgdbm -lpq -lz -ltcl83 -ltk83 -lX11
-
-*/
 
 #include <Python.h>
 #include <tcl.h>
@@ -376,10 +354,10 @@ EXTERN int Tclpython_Init(Tcl_Interp *interpreter)
     #if PY_MAJOR_VERSION >= 3
         Tcl_CreateObjCommand(interpreter, "::python3::interp", command, 0, 0);
         Py_NoSiteFlag = 1;// suppress automatic 'import site' to prevent interpreter from hanging on new thread 
-        return Tcl_PkgProvide(interpreter, "tclpython3", "4.1");
+        return Tcl_PkgProvide(interpreter, "tclpython3", "4.2");
     #else
         Tcl_CreateObjCommand(interpreter, "::python::interp", command, 0, 0);
         Py_NoSiteFlag = 1;// suppress automatic 'import site' to prevent interpreter from hanging on new thread 
-        return Tcl_PkgProvide(interpreter, "tclpython", "4.1");
+        return Tcl_PkgProvide(interpreter, "tclpython", "4.2");
     #endif
 }

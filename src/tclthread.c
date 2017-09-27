@@ -1,8 +1,3 @@
-/* copyright (C) 2001-2004 Jean-Luc Fontaine (mailto:jfontain@free.fr) */
-/* this library is free software: please read the README file enclosed in this package */
-
-/* $Id: tclthread.c,v 1.2 2006/03/05 17:41:53 jfontain Exp $ */
-
 
 #include <string.h>
 #include <tcl.h>
