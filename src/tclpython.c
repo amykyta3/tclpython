@@ -3,31 +3,6 @@
 #include <tcl.h>
 #include "tclpython.h"
 
-static PyObject *pythonTclEvaluate(PyObject *self, PyObject *args);
-
-static PyMethodDef tclMethods[] = {
-    {"eval", pythonTclEvaluate, METH_VARARGS, "Evaluate a Tcl script."},
-    {0, 0, 0, 0}                                                                                                      /* sentinel */
-};
-
-#if PY_MAJOR_VERSION >= 3
-struct module_state {
-  PyObject *error;
-};
-
-static struct PyModuleDef TclModuleDef = {
-  PyModuleDef_HEAD_INIT,
-  "tcl",
-  NULL,
-  sizeof(struct module_state),
-  tclMethods,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-};
-#endif
-
 #ifndef WIN32
 /* George Petasis, 21 Feb 2006:
  * The following check cannot be handled correctly
@@ -63,8 +38,8 @@ static int newIdentifier;
 static PyThreadState *globalState = 0;
 #endif
 
-static Tcl_Interp *mainInterpreter;                                                 /* needed for Tcl evaluation from Python side */
-static Tcl_ThreadId mainThread;                                 /* needed for Python threads, 0 if Tcl core is not thread-enabled */
+static Tcl_Interp *mainInterpreter; /* needed for Tcl evaluation from Python side */
+static Tcl_ThreadId mainThread; /* needed for Python threads, 0 if Tcl core is not thread-enabled */
 
 static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int numberOfArguments, Tcl_Obj * CONST arguments[])
 {
@@ -131,57 +106,6 @@ static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int
     return(result == 0? TCL_ERROR: TCL_OK);
 }
 
-Tcl_Interp *tclInterpreter(CONST char *name)                           /* public function for use in extensions to this extension */
-{
-    intptr_t identifier;
-
-    if ((sscanf(name, "tcl%lu", &identifier) == 0) || (identifier != 0)) {
-        return 0;                                                                                                 /* invalid name */
-    } else {
-        return mainInterpreter;                                                                     /* sole available interpreter */
-    }
-}
-
-static int tclEvaluate(CONST char *name, CONST char *script, char **string, int *length)              /* returns true if no error */
-{
-    Tcl_Interp *interpreter;
-    int result;
-    Tcl_Obj *object;
-
-    interpreter = tclInterpreter(name);
-    if (interpreter == 0) {
-        object = Tcl_NewObj();
-        Tcl_AppendStringsToObj(object, "invalid Tcl interpreter name: ", name, 0);
-        *string = Tcl_GetStringFromObj(object, length);
-        return 0;
-    } else if (CURRENTTHREAD == mainThread) {                                                                /* non threaded code */
-        Tcl_Preserve(interpreter);
-        result = Tcl_EvalEx(interpreter, script, -1, TCL_EVAL_DIRECT | TCL_EVAL_GLOBAL);
-        *string = Tcl_GetStringFromObj(Tcl_GetObjResult(interpreter), length);
-        Tcl_Release(interpreter);
-        return (result == TCL_OK);
-    } else {                               /* threaded code: function like Tcl thread extension send command in asynchronous mode */
-        tclSendThread(mainThread, interpreter, script);               /* let the interpreter in the main thread evaluate the code */
-        *string = 0;                                                                                       /* nothing is returned */
-        return 1;                                                       /* errors, if any, are reported on standard error channel */
-    }
-}
-
-static PyObject *pythonTclEvaluate(PyObject *self, PyObject *args)
-{
-    CONST char *script;
-    char *result;
-    int length;
-
-    if (!PyArg_ParseTuple(args, "s", &script))
-        return 0;
-    length = strlen(script);
-    if (!tclEvaluate("tcl0", script, &result, &length)) {
-        PyErr_SetString(PyExc_RuntimeError, result);
-    }
-    return Py_BuildValue("s", result);
-}
-
 static int newInterpreter(Tcl_Interp *interpreter)
 {
     intptr_t identifier;
@@ -190,7 +114,6 @@ static int newInterpreter(Tcl_Interp *interpreter)
 #ifdef WITH_THREAD
     PyThreadState *state;
 #endif
-    PyObject *tcl;
 
     identifier = newIdentifier;
 #ifndef WITH_THREAD
@@ -233,13 +156,6 @@ static int newInterpreter(Tcl_Interp *interpreter)
     newIdentifier++;
 #endif
     existingInterpreters++;
-#if PY_MAJOR_VERSION >= 3
-    tcl = PyModule_Create(&TclModuleDef);
-#else
-    tcl = Py_InitModule("tcl", tclMethods);                                   /* add a new 'tcl' module to the python interpreter */
-#endif
-    Py_INCREF(tcl);
-    PyModule_AddObject(PyImport_AddModule("__builtin__"), "tcl", tcl);
     return TCL_OK;
 }
 
@@ -287,8 +203,7 @@ static int deleteInterpreters(Tcl_Interp *interpreter, int numberOfArguments, Tc
     return TCL_OK;
 }
 
-static int command(ClientData clientData, Tcl_Interp *interpreter, int numberOfArguments, Tcl_Obj * CONST arguments[])
-{
+static int command(ClientData clientData, Tcl_Interp *interpreter, int numberOfArguments, Tcl_Obj * CONST arguments[]) {
     char *command;
     unsigned new;
     unsigned delete;
@@ -316,31 +231,30 @@ static int command(ClientData clientData, Tcl_Interp *interpreter, int numberOfA
         }
     }
     if (delete) {
-#ifdef WITH_THREAD
+        #ifdef WITH_THREAD
         if (numberOfArguments < 3) {
             Tcl_WrongNumArgs(interpreter, 1, arguments, "delete ?interp interp ...?");
-#else
+        #else
         if (numberOfArguments != 3) {                                                        /* there can be one interpreter only */
             Tcl_WrongNumArgs(interpreter, 1, arguments, "delete interp");
-#endif
+        #endif
             return TCL_ERROR;
         } else {
             return deleteInterpreters(interpreter, numberOfArguments -2, arguments + 2);
         }
     }
-    return TCL_ERROR;                                                                                            /* never reached */
+    return TCL_ERROR; /* never reached */
 }
 
 #ifdef WIN32
-/* George Petasis, 21 Feb 2006:
- * Under Visual C++, functions exported from DLLs must be declared
- * with __declspec(dllexport) */
-#undef TCL_STORAGE_CLASS
-#define TCL_STORAGE_CLASS DLLEXPORT
+    // George Petasis, 21 Feb 2006:
+    // Under Visual C++, functions exported from DLLs must be declared
+    // with __declspec(dllexport)
+    #undef TCL_STORAGE_CLASS
+    #define TCL_STORAGE_CLASS DLLEXPORT
 #endif
 
-EXTERN int Tclpython_Init(Tcl_Interp *interpreter)
-{
+EXTERN int Tclpython_Init(Tcl_Interp *interpreter) {
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interpreter, "8.1", 0) == 0) {
         return TCL_ERROR;

@@ -10,4 +10,3 @@
 #endif
 extern void tclSendThread(Tcl_ThreadId, Tcl_Interp *, CONST char *);
 /* public function for use in extensions to this extension: */
-extern Tcl_Interp *tclInterpreter(CONST char *);
