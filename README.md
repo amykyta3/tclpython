@@ -64,8 +64,8 @@ make install INSTALL_DIR=path/from/step/2
 #### For Python 3:
 
 ```bash
-make TCL_PKG=tclpython3
-make install TCL_PKG=tclpython3 INSTALL_DIR=path/from/step/2
+make PKG_NAME=tclpython3
+make install PKG_NAME=tclpython3 INSTALL_DIR=path/from/step/2
 ```
 
 ## Installing (Windows)

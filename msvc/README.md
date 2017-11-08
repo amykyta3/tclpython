@@ -46,6 +46,6 @@ nmake install
 ### For Python 3:
 
 ```bash
-nmake TCL_PKG=tclpython3
-nmake install TCL_PKG=tclpython3
+nmake PKG_NAME=tclpython3
+nmake install PKG_NAME=tclpython3
 ```
