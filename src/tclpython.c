@@ -216,6 +216,9 @@ static int cmd_interp(ClientData clientData, Tcl_Interp *interpreter, int objc, 
     #define TCL_STORAGE_CLASS DLLEXPORT
 #endif
 
+#define STR(s) #s
+#define XSTR(s) STR(s)
+
 /**
 * \brief Initialize tclpython at package import
 **/
@@ -231,9 +234,9 @@ EXTERN int Tclpython_Init(Tcl_Interp *interpreter){
     
     #if (PY_MAJOR_VERSION >= 3)
     Tcl_CreateObjCommand(interpreter, "::python3::interp", cmd_interp, NULL, NULL);
-    return(Tcl_PkgProvide(interpreter, "tclpython3", "4.2"));
+    return(Tcl_PkgProvide(interpreter, "tclpython3", XSTR(TCLPYTHON_VERSION)));
     #else
     Tcl_CreateObjCommand(interpreter, "::python::interp", cmd_interp, NULL, NULL);
-    return(Tcl_PkgProvide(interpreter, "tclpython", "4.2"));
+    return(Tcl_PkgProvide(interpreter, "tclpython", XSTR(TCLPYTHON_VERSION)));
     #endif
 }

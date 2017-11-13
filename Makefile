@@ -19,6 +19,7 @@ TCL_VERSION=$(shell echo 'puts $\$$tcl_version' | tclsh)
 CFLAGS:= -O2 -Wall -fPIC -DUSE_TCL_STUBS
 CFLAGS+= $(shell $(PYTHON_CONFIG) --includes)
 CFLAGS+= -I/usr/include/tcl$(TCL_VERSION)
+CFLAGS+= -DTCLPYTHON_VERSION=$(PKG_VERSION)
 LDFLAGS:= -shared -s
 LDFLAGS+= $(shell $(PYTHON_CONFIG) --libs)
 LDFLAGS+= -ltclstub$(TCL_VERSION)
