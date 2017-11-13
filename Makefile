@@ -58,7 +58,7 @@ $(OUTPUT_DIR)/$(LIBRARY): $(OBJECTS)
 	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-$(OUTPUT_DIR)/pkgIndex.tcl:pkg/$(PKG_NAME)/pkgIndex.tcl
+$(OUTPUT_DIR)/pkgIndex.tcl:pkg/pkgIndex.tcl
 	cp -t $(dir $@) $^
 	
 package: $(OUTPUT_DIR)/$(LIBRARY) $(OUTPUT_DIR)/pkgIndex.tcl
