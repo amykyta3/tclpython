@@ -11,7 +11,7 @@ else ifeq ($(PKG_NAME),tclpython3)
 	PYTHON_CONFIG=python3-config
 endif
 
-BUILD_DIR=build_$(PKG_NAME)
+BUILD_DIR=build/$(PKG_NAME)
 OUTPUT_DIR=$(BUILD_DIR)/$(PKG_NAME)
 LIBRARY:= $(PKG_NAME).so.$(PKG_VERSION)
 
@@ -24,7 +24,7 @@ LDFLAGS+= $(shell $(PYTHON_CONFIG) --libs)
 LDFLAGS+= -ltclstub$(TCL_VERSION)
 
 SRC:= src/tclpython.c
-SRC+= src/tclthread.c
+SRC+= src/py.c
 
 #===============================================================================
 
@@ -68,6 +68,6 @@ ifneq ($(MAKECMDGOALS), clean)
 endif
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf build
 
 .PHONY: all test install uninstall clean package
