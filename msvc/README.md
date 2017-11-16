@@ -39,6 +39,7 @@ Double-click `start_msvc_shell.bat` to open the compiler command shell.
 
 ```bash
 nmake
+nmake test
 nmake install
 ```
 
@@ -46,5 +47,6 @@ nmake install
 
 ```bash
 nmake PKG_NAME=tclpython3
+nmake PKG_NAME=tclpython3 test
 nmake install PKG_NAME=tclpython3
 ```

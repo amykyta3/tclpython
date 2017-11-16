@@ -59,12 +59,14 @@ Installations of the package for Python 2 and 3 can coexist.
 
 ```bash
 make
+make test
 make install INSTALL_DIR=path/from/step/2
 ```
 #### For Python 3:
 
 ```bash
 make PKG_NAME=tclpython3
+make PKG_NAME=tclpython3 test
 make install PKG_NAME=tclpython3 INSTALL_DIR=path/from/step/2
 ```
 
