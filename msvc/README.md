@@ -1,7 +1,7 @@
 # Installing (Windows)
 
 ## 1. Install Dependencies
-All dependeincies must use their 32-bit (x86) installers
+All dependencies must use their 32-bit (x86) installers
 
 * [MS Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)
 * [ActiveState Tcl](https://www.activestate.com/activetcl/downloads)
@@ -14,7 +14,7 @@ Make sure paths to all installations are correct in your environment.
 In `start_msvc_shell.bat`, edit variables:
 
 * vcbuildtools
-    * Path to the `vcbuildtools.bat` script located in the MS Visual C++ Build Tools intstallation
+    * Path to the `vcbuildtools.bat` script located in the MS Visual C++ Build Tools installation
 
 In `Makefile`, edit variables:
 
