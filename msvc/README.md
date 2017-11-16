@@ -3,11 +3,10 @@
 ## 1. Install Dependencies
 All dependeincies must use their 32-bit (x86) installers
 
-[MS Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)
-
-[ActiveState Tcl](https://www.activestate.com/activetcl/downloads)
-
-[Python (2.x and/or 3.x)](https://www.python.org/downloads)
+* [MS Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)
+* [ActiveState Tcl](https://www.activestate.com/activetcl/downloads)
+* [Python (2.x and/or 3.x)](https://www.python.org/downloads)
+    * Be sure to customize the installation and check: "Add Python to environment variables"
 
 ## 2: Edit Paths
 Make sure paths to all installations are correct in your environment.

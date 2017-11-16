@@ -7,7 +7,7 @@ INSTALL_DIR=C:\Tcl\lib\tcl8.5
 
 # Override PKG_NAME to tclpython or tclpython3
 PKG_NAME=tclpython
-PKG_VERSION=4.2
+PKG_VERSION=5.0
 
 #===============================================================================
 !if ("$(PKG_NAME)" == "tclpython")
@@ -16,25 +16,23 @@ PYTHON_PATH=$(PYTHON2_PATH)
 PYTHON_PATH=$(PYTHON3_PATH)
 !endif
 
-BUILD_DIR=build_$(PKG_NAME)
+BUILD_DIR=build\$(PKG_NAME)
 OUTPUT_DIR=$(BUILD_DIR)\$(PKG_NAME)
 LIBRARY= $(PKG_NAME)-$(PKG_VERSION).dll
 
-# REMOVED: -YX -Op
-# -FpBuildTemp
 CFLAGS= -nologo -W3 -MT -EHsc -FD -O2 -Gs \
 		-D "WIN32" -D "NDEBUG" -D "_WINDOWS" -D "_MBCS" \
 		-D "_USRDLL" -D "USE_TCL_STUBS" \
+		-DTCLPYTHON_VERSION=$(PKG_VERSION) \
 		-I"$(TCL_PATH)\include" \
 		-I"$(PYTHON_PATH)\include"
 
-#REMOVED -machine:I386
 LDFLAGS= -nologo  -release -opt:ref -opt:icf,3 -dll \
 		-incremental:no -nodefaultlib:MSVCRT.LIB \
 		-libpath:"$(TCL_PATH)\lib" \
 		-libpath:"$(PYTHON_PATH)\libs"
 
-OBJECTS= $(BUILD_DIR)/tclpython.obj $(BUILD_DIR)/tclthread.obj
+OBJECTS= $(BUILD_DIR)/tclpython.obj $(BUILD_DIR)/py.obj
 
 #===============================================================================
 
@@ -63,8 +61,8 @@ $(OUTPUT_DIR)\$(LIBRARY): $(TCL_PATH)\lib\tclstub*.lib $(OBJECTS)
 	@-mkdir $(@D)
 	link $(LDFLAGS) -out:$@ $?
 	
-$(OUTPUT_DIR)\pkgIndex.tcl :..\pkg\$(PKG_NAME)\pkgIndex.tcl
-	copy ..\pkg\$(PKG_NAME)\pkgIndex.tcl $(OUTPUT_DIR)\pkgIndex.tcl 
+$(OUTPUT_DIR)\pkgIndex.tcl :..\pkg\pkgIndex.tcl
+	copy ..\pkg\pkgIndex.tcl $(OUTPUT_DIR)\pkgIndex.tcl 
 
 clean:
-	-rmdir /S /Q $(BUILD_DIR)
+	-rmdir /S /Q build
