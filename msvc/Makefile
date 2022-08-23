@@ -6,7 +6,7 @@ PYTHON3_PATH=C:\Program Files (x86)\Python36-32
 INSTALL_DIR=C:\Tcl\lib\tcl8.5
 
 # Override PKG_NAME to tclpython or tclpython3
-PKG_NAME=tclpython
+PKG_NAME=tclpython3
 PKG_VERSION=5.0
 
 #===============================================================================
@@ -60,9 +60,9 @@ $(OUTPUT_DIR)\$(LIBRARY): $(TCL_PATH)\lib\tclstub*.lib $(OBJECTS)
 	@echo "$? --> $@"
 	@-mkdir $(@D)
 	link $(LDFLAGS) -out:$@ $?
-	
+
 $(OUTPUT_DIR)\pkgIndex.tcl :..\pkg\pkgIndex.tcl
-	copy ..\pkg\pkgIndex.tcl $(OUTPUT_DIR)\pkgIndex.tcl 
+	copy ..\pkg\pkgIndex.tcl $(OUTPUT_DIR)\pkgIndex.tcl
 
 clean:
 	-rmdir /S /Q build

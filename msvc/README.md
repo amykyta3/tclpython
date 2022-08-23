@@ -35,7 +35,7 @@ In `Makefile`, edit variables:
 Double-click `start_msvc_shell.bat` to open the compiler command shell.
 
 
-### For Python 2:
+### For Python 3:
 
 ```bash
 nmake
@@ -43,10 +43,11 @@ nmake test
 nmake install
 ```
 
-### For Python 3:
+
+### For Python 2:
 
 ```bash
-nmake PKG_NAME=tclpython3
-nmake PKG_NAME=tclpython3 test
-nmake install PKG_NAME=tclpython3
+nmake PKG_NAME=tclpython
+nmake PKG_NAME=tclpython test
+nmake PKG_NAME=tclpython install
 ```

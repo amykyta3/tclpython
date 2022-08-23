@@ -1,5 +1,5 @@
 # Override PKG_NAME to tclpython or tclpython3
-PKG_NAME=tclpython
+PKG_NAME=tclpython3
 PKG_VERSION=5.0
 
 INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
@@ -53,7 +53,7 @@ $(BUILD_DIR)/%.d: %.c
 $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
-	
+
 # Link
 $(OUTPUT_DIR)/$(LIBRARY): $(OBJECTS)
 	@mkdir -p $(dir $@)
@@ -61,7 +61,7 @@ $(OUTPUT_DIR)/$(LIBRARY): $(OBJECTS)
 
 $(OUTPUT_DIR)/pkgIndex.tcl:pkg/pkgIndex.tcl
 	cp -t $(dir $@) $^
-	
+
 package: $(OUTPUT_DIR)/$(LIBRARY) $(OUTPUT_DIR)/pkgIndex.tcl
 
 ifneq ($(MAKECMDGOALS), clean)

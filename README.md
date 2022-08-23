@@ -29,12 +29,12 @@ python::interp delete $interpreter
 
 #### Debian
 ```bash
-sudo apt-get install python-dev python3-dev tcl-dev
+sudo apt install python3-dev tcl-dev
 ```
 
 #### Red Hat
 ```bash
-sudo yum install python-devel python3-devel tcl-devel
+sudo yum install python3-devel tcl-devel
 ```
 
 ### 2. Determine install path
@@ -55,19 +55,21 @@ export TCLLIBPATH=$TCLLIBPATH:/path/to/my/tcl/packages
 ### 3. Compile from source
 Installations of the package for Python 2 and 3 can coexist.
 
-#### For Python 2:
+
+#### For Python 3:
 
 ```bash
 make
 make test
 make install INSTALL_DIR=path/from/step/2
 ```
-#### For Python 3:
+
+#### For Python 2:
 
 ```bash
-make PKG_NAME=tclpython3
-make PKG_NAME=tclpython3 test
-make install PKG_NAME=tclpython3 INSTALL_DIR=path/from/step/2
+make PKG_NAME=tclpython
+make PKG_NAME=tclpython test
+make install PKG_NAME=tclpython INSTALL_DIR=path/from/step/2
 ```
 
 ## Installing (Windows)
