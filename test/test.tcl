@@ -14,7 +14,7 @@ switch $tclpython {
         set python_exe python
         set cmd_interp python::interp
     }
-    
+
     tclpython3 {
         if {$::tcl_platform(platform) == "windows"} {
             # Windows does not distinguish between Python versions
@@ -24,7 +24,7 @@ switch $tclpython {
         }
         set cmd_interp python3::interp
     }
-    
+
     default {
         error "Invalid package '[lindex $argv 0] '"
     }

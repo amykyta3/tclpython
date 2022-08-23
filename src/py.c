@@ -19,7 +19,7 @@ static unsigned InterpCount = 0;
 py_interp_t* python_new_interpreter(void){
     #ifdef WITH_THREAD
         PyThreadState *thread_state;
-        
+
         if(InterpCount == 0){
             // First time initializing Python
             Py_NoSiteFlag = 1;
@@ -27,15 +27,15 @@ py_interp_t* python_new_interpreter(void){
             PyEval_InitThreads();
             GlobalThread = PyEval_SaveThread();
         }
-        
+
         PyEval_RestoreThread(GlobalThread);
         thread_state = Py_NewInterpreter();
-        
+
         py_interp_t *interp;
         interp = malloc(sizeof(py_interp_t));
         interp->thread_state = thread_state;
         interp->globals = PyModule_GetDict(PyImport_AddModule("__main__"));
-        
+
         PyEval_SaveThread();
     #else
         // Python was compiled without thread support
@@ -43,14 +43,14 @@ py_interp_t* python_new_interpreter(void){
         if(InterpCount != 0){
             return(NULL);
         }
-        
+
         Py_Initialize();
-        
+
         py_interp_t *interp;
         interp = malloc(sizeof(py_interp_t));
         interp->globals = PyModule_GetDict(PyImport_AddModule("__main__"));
     #endif
-    
+
     InterpCount++;
     return(interp);
 }
@@ -62,10 +62,10 @@ void python_delete_interpreter(py_interp_t *interp){
         Py_EndInterpreter(interp->thread_state);
         PyEval_ReleaseLock();
     #endif
-    
+
     free(interp);
     InterpCount--;
-    
+
     if(InterpCount == 0){
         // no remaining sub-interpreters
         // Clean up Python's interpreter
@@ -82,7 +82,7 @@ int python_exec(py_interp_t *interp, const char *str){
     #ifdef WITH_THREAD
         PyEval_RestoreThread(interp->thread_state);
     #endif
-    
+
     PyObject *py_result;
     py_result = PyRun_String(str, Py_file_input, interp->globals, interp->globals);
     if(!py_result) {
@@ -104,7 +104,7 @@ char* python_eval(py_interp_t *interp, const char *str){
     #ifdef WITH_THREAD
         PyEval_RestoreThread(interp->thread_state);
     #endif
-    
+
     PyObject *py_result;
     char *result_str;
     py_result = PyRun_String(str, Py_eval_input, interp->globals, interp->globals);
@@ -115,7 +115,7 @@ char* python_eval(py_interp_t *interp, const char *str){
     } else {
         PyObject *py_result_str;
         char *tmp_str;
-        
+
         // Get string representation of result
         py_result_str = PyObject_Str(py_result);
         #if PY_MAJOR_VERSION >= 3
@@ -123,11 +123,11 @@ char* python_eval(py_interp_t *interp, const char *str){
         #else
         tmp_str = PyString_AsString(py_result_str);
         #endif
-        
+
         // Copy string
         result_str = malloc(sizeof(char)*(strlen(tmp_str)+1));
         strcpy(result_str, tmp_str);
-        
+
         // Free python result objects
         Py_DECREF(py_result_str);
         Py_DECREF(py_result);
@@ -135,6 +135,6 @@ char* python_eval(py_interp_t *interp, const char *str){
     #ifdef WITH_THREAD
         PyEval_SaveThread();
     #endif
-        
+
     return(result_str);
 }

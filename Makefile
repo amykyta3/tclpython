@@ -17,11 +17,11 @@ LIBRARY:= $(PKG_NAME).so.$(PKG_VERSION)
 
 TCL_VERSION=$(shell echo 'puts $\$$tcl_version' | tclsh)
 CFLAGS:= -O2 -Wall -fPIC -DUSE_TCL_STUBS
-CFLAGS+= $(shell $(PYTHON_CONFIG) --includes)
+CFLAGS+= $(shell $(PYTHON_CONFIG) --cflags)
 CFLAGS+= -I/usr/include/tcl$(TCL_VERSION)
 CFLAGS+= -DTCLPYTHON_VERSION=$(PKG_VERSION)
 LDFLAGS:= -shared -s
-LDFLAGS+= $(shell $(PYTHON_CONFIG) --libs)
+LDFLAGS+= $(shell $(PYTHON_CONFIG) --ldflags)
 LDFLAGS+= -ltclstub$(TCL_VERSION)
 
 SRC:= src/tclpython.c
