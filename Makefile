@@ -11,6 +11,7 @@ ifeq ($(PKG_NAME),tclpython)
 else ifeq ($(PKG_NAME),tclpython3)
 	PYTHON_CONFIG=python3-config
 	ifeq ($(shell python3 -c "import sys; print(sys.version_info[0:2] >= (3, 8))"),True)
+# 		Py3.8 and newer require the --embed flag
 		PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags --embed)
 	else
 		PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)

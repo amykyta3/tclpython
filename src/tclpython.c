@@ -44,20 +44,20 @@ static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int
     intptr_t identifier;
     Tcl_Obj *object;
     int result;
-        
+
     struct Tcl_HashEntry *I_entry;
 
     if (objc != 3) {
         Tcl_WrongNumArgs(interpreter, 1, objv, "eval|exec script");
         return(TCL_ERROR);
     }
-    
+
     // interpreter name is "pythonN"
     I_entry = NULL;
     if(sscanf(Tcl_GetString(objv[0]), "python%lu", &identifier) == 1) {
         I_entry = Tcl_FindHashEntry(&interp_info_table, (ClientData)identifier);
     }
-    
+
     if(!I_entry) {
         object = Tcl_NewObj();
         Tcl_AppendStringsToObj(
@@ -69,7 +69,7 @@ static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int
     }
     py_interp_t *py_interp;
     py_interp = Tcl_GetHashValue(I_entry);
-    
+
     // choose start token depending on whether this is an evaluation or an execution
     char *subcommand;
     subcommand = Tcl_GetString(objv[1]);
@@ -98,7 +98,7 @@ static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int
         Tcl_AppendStringsToObj(object, "bad option \"", subcommand, "\": must be eval or exec", 0);
         result = TCL_ERROR;
     }
-    
+
     Tcl_SetObjResult(interpreter, object);
     return(result);
 }
@@ -107,7 +107,7 @@ static int pythonInterpreter(ClientData clientData, Tcl_Interp *interpreter, int
 static int newInterpreter(Tcl_Interp *interpreter){
     intptr_t identifier;
     int created;
-    
+
     py_interp_t *py_interp;
     py_interp = python_new_interpreter();
     if(!py_interp){
@@ -118,18 +118,18 @@ static int newInterpreter(Tcl_Interp *interpreter){
         );
         return(TCL_ERROR);
     }
-    
+
     // Save python interpreter info
     identifier = newIdentifier;
     Tcl_SetHashValue(Tcl_CreateHashEntry(&interp_info_table, (ClientData)identifier, &created), py_interp);
-    
+
     // Return "pythonN" and register it as a new command keyword
     Tcl_Obj *object;
     object = Tcl_NewStringObj("python", -1);
     Tcl_AppendObjToObj(object, Tcl_NewIntObj(identifier));
     Tcl_SetObjResult(interpreter, object);
     Tcl_CreateObjCommand(interpreter, Tcl_GetString(object), pythonInterpreter, NULL, NULL);
-    
+
     newIdentifier++;
     return(TCL_OK);
 }
@@ -145,19 +145,19 @@ static int deleteInterpreter(Tcl_Interp *interpreter, char *name) {
     if(sscanf(name, "python%lu", &identifier) == 1) {
         I_entry = Tcl_FindHashEntry(&interp_info_table, (ClientData)identifier);
     }
-    
+
     if(!I_entry) {
         object = Tcl_NewObj();
         Tcl_AppendStringsToObj(object, "invalid interpreter \"", name, 0);
         Tcl_SetObjResult(interpreter, object);
         return(TCL_ERROR);
     }
-    
+
     py_interp_t *py_interp;
     py_interp = Tcl_GetHashValue(I_entry);
     python_delete_interpreter(py_interp);
     Tcl_DeleteHashEntry(I_entry);
-    
+
     return(TCL_OK);
 }
 
@@ -175,7 +175,7 @@ static int cmd_interp(ClientData clientData, Tcl_Interp *interpreter, int objc, 
         return(TCL_ERROR);
     }
     subcommand = Tcl_GetString(objv[1]);
-    
+
     if(!strcmp(subcommand, "new")){
         if(objc != 2) {
             Tcl_WrongNumArgs(interpreter, 1, objv, "new");
@@ -195,14 +195,14 @@ static int cmd_interp(ClientData clientData, Tcl_Interp *interpreter, int objc, 
             }
             return(TCL_OK);
         }
-        
+
     } else {
         object = Tcl_NewObj();
         Tcl_AppendStringsToObj(object, "bad option \"", subcommand, "\": must be new or delete", 0);
         Tcl_SetObjResult(interpreter, object);
         return(TCL_ERROR);
     }
-    
+
     // Should never reach
     return(TCL_ERROR);
 }
@@ -228,10 +228,10 @@ EXTERN int Tclpython_Init(Tcl_Interp *interpreter){
         return(TCL_ERROR);
     }
     #endif
-    
+
     Tcl_InitHashTable(&interp_info_table, TCL_ONE_WORD_KEYS);
     newIdentifier = 0;
-    
+
     #if (PY_MAJOR_VERSION >= 3)
     Tcl_CreateObjCommand(interpreter, "::python3::interp", cmd_interp, NULL, NULL);
     return(Tcl_PkgProvide(interpreter, "tclpython3", XSTR(TCLPYTHON_VERSION)));

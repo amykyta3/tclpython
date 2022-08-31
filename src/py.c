@@ -24,7 +24,11 @@ py_interp_t* python_new_interpreter(void){
             // First time initializing Python
             Py_NoSiteFlag = 1;
             Py_Initialize();
-            PyEval_InitThreads();
+            #if (PY_MAJOR_VERSION == 3) && (PY_MINOR_VERSION >= 9)
+                // deprecated in python3.9
+            #else
+                PyEval_InitThreads();
+            #endif
             GlobalThread = PyEval_SaveThread();
         }
 
@@ -60,7 +64,12 @@ void python_delete_interpreter(py_interp_t *interp){
     #ifdef WITH_THREAD
         PyEval_RestoreThread(interp->thread_state);
         Py_EndInterpreter(interp->thread_state);
-        PyEval_ReleaseLock();
+        //#if (PY_MAJOR_VERSION == 3) && (PY_MINOR_VERSION >= 9)
+            PyThreadState_Swap(GlobalThread);
+            PyEval_ReleaseThread(GlobalThread);
+        //#else
+        //    PyEval_ReleaseLock();
+        //#endif
     #endif
 
     free(interp);
