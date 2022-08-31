@@ -7,8 +7,14 @@ INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
 #===============================================================================
 ifeq ($(PKG_NAME),tclpython)
 	PYTHON_CONFIG=python2-config
+	PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)
 else ifeq ($(PKG_NAME),tclpython3)
 	PYTHON_CONFIG=python3-config
+	ifeq ($(shell python3 -c "import sys; print(sys.version_info[0:2] >= (3, 8))"),True)
+		PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags --embed)
+	else
+		PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)
+	endif
 endif
 
 BUILD_DIR=build/$(PKG_NAME)
@@ -21,7 +27,7 @@ CFLAGS+= $(shell $(PYTHON_CONFIG) --cflags)
 CFLAGS+= -I/usr/include/tcl$(TCL_VERSION)
 CFLAGS+= -DTCLPYTHON_VERSION=$(PKG_VERSION)
 LDFLAGS:= -shared -s
-LDFLAGS+= $(shell $(PYTHON_CONFIG) --ldflags)
+LDFLAGS+= $(PYTHON_CONFIG_LDFLAGS)
 LDFLAGS+= -ltclstub$(TCL_VERSION)
 
 SRC:= src/tclpython.c
