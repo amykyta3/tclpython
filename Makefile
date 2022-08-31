@@ -1,6 +1,6 @@
 # Override PKG_NAME to tclpython or tclpython3
 PKG_NAME=tclpython3
-PKG_VERSION=5.0
+PKG_VERSION=5.0.1
 
 INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
 

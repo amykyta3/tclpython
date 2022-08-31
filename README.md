@@ -1,3 +1,5 @@
+[![build](https://github.com/amykyta3/tclpython/workflows/build/badge.svg)](https://github.com/amykyta3/tclpython/actions?query=workflow%3Abuild+branch%3Amaster)
+
 # TclPython
 
 This package allows the execution of Python code from a Tcl interpreter.

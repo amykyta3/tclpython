@@ -7,7 +7,7 @@ INSTALL_DIR=C:\Tcl\lib\tcl8.5
 
 # Override PKG_NAME to tclpython or tclpython3
 PKG_NAME=tclpython3
-PKG_VERSION=5.0
+PKG_VERSION=5.0.1
 
 #===============================================================================
 !if ("$(PKG_NAME)" == "tclpython")

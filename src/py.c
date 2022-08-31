@@ -64,12 +64,8 @@ void python_delete_interpreter(py_interp_t *interp){
     #ifdef WITH_THREAD
         PyEval_RestoreThread(interp->thread_state);
         Py_EndInterpreter(interp->thread_state);
-        //#if (PY_MAJOR_VERSION == 3) && (PY_MINOR_VERSION >= 9)
-            PyThreadState_Swap(GlobalThread);
-            PyEval_ReleaseThread(GlobalThread);
-        //#else
-        //    PyEval_ReleaseLock();
-        //#endif
+        PyThreadState_Swap(GlobalThread);
+        PyEval_ReleaseThread(GlobalThread);
     #endif
 
     free(interp);
