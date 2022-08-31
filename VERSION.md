@@ -1,7 +1,7 @@
 # Version History
 All versions are tagged with the corresponding version number.
 
-## `5.0.1`
+## `5.1`
 * Fix compatibility with Python 3.8 and newer
 
 ## `5.0`
