@@ -5,17 +5,12 @@ PKG_VERSION=5.1
 INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
 
 #===============================================================================
-ifeq ($(PKG_NAME),tclpython)
-	PYTHON_CONFIG=python2-config
-	PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)
-else ifeq ($(PKG_NAME),tclpython3)
-	PYTHON_CONFIG=python3-config
-	ifeq ($(shell python3 -c "import sys; print(sys.version_info[0:2] >= (3, 8))"),True)
-# 		Py3.8 and newer require the --embed flag
-		PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags --embed)
-	else
-		PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)
-	endif
+PYTHON_CONFIG=python3-config
+ifeq ($(shell python3 -c "import sys; print(sys.version_info[0:2] >= (3, 8))"),True)
+#   Py3.8 and newer require the --embed flag
+    PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags --embed)
+else
+    PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)
 endif
 
 BUILD_DIR=build/$(PKG_NAME)
@@ -39,7 +34,7 @@ SRC+= src/py.c
 all:package
 
 test: package
-	TCLLIBPATH=$(OUTPUT_DIR) tclsh test/test.tcl $(PKG_NAME)
+	TCLLIBPATH=$(OUTPUT_DIR) tclsh test/test.tcl
 
 install: package
 	cp -r $(OUTPUT_DIR) $(INSTALL_DIR)/$(PKG_NAME)

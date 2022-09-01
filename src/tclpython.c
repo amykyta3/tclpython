@@ -232,11 +232,6 @@ EXTERN int Tclpython_Init(Tcl_Interp *interpreter){
     Tcl_InitHashTable(&interp_info_table, TCL_ONE_WORD_KEYS);
     newIdentifier = 0;
 
-    #if (PY_MAJOR_VERSION >= 3)
     Tcl_CreateObjCommand(interpreter, "::python3::interp", cmd_interp, NULL, NULL);
     return(Tcl_PkgProvide(interpreter, "tclpython3", XSTR(TCLPYTHON_VERSION)));
-    #else
-    Tcl_CreateObjCommand(interpreter, "::python::interp", cmd_interp, NULL, NULL);
-    return(Tcl_PkgProvide(interpreter, "tclpython", XSTR(TCLPYTHON_VERSION)));
-    #endif
 }

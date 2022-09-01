@@ -5,7 +5,7 @@ All dependencies must use their 32-bit (x86) installers
 
 * [MS Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)
 * [ActiveState Tcl](https://www.activestate.com/activetcl/downloads)
-* [Python (2.x and/or 3.x)](https://www.python.org/downloads)
+* [Python](https://www.python.org/downloads)
     * Be sure to customize the installation and check: "Add Python to environment variables"
 
 ## 2: Edit Paths
@@ -20,8 +20,6 @@ In `Makefile`, edit variables:
 
 * TCL_PATH
     * Path to root of Tcl installation
-* PYTHON2_PATH
-    * Path to root of Python 2.x.x installation
 * PYTHON3_PATH
     * Path to root of Python 3.x.x installation
 * INSTALL_DIR
@@ -34,20 +32,8 @@ In `Makefile`, edit variables:
 
 Double-click `start_msvc_shell.bat` to open the compiler command shell.
 
-
-### For Python 3:
-
 ```bash
 nmake
 nmake test
 nmake install
-```
-
-
-### For Python 2:
-
-```bash
-nmake PKG_NAME=tclpython
-nmake PKG_NAME=tclpython test
-nmake PKG_NAME=tclpython install
 ```

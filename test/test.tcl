@@ -3,36 +3,17 @@ foreach p $auto_path {
     puts "$p"
 }
 
-if {$argc != 1} {
-    error "Must specify 'tclpython or tclpython3'"
-}
-
 #===============================================================================
-set tclpython [lindex $argv 0]
-switch $tclpython {
-    tclpython {
-        set python_exe python
-        set cmd_interp python::interp
-    }
-
-    tclpython3 {
-        if {$::tcl_platform(platform) == "windows"} {
-            # Windows does not distinguish between Python versions
-            set python_exe python
-        } else {
-            set python_exe python3
-        }
-        set cmd_interp python3::interp
-    }
-
-    default {
-        error "Invalid package '[lindex $argv 0] '"
-    }
+if {$::tcl_platform(platform) == "windows"} {
+    # Windows does not distinguish between Python versions
+    set python_exe python
+} else {
+    set python_exe python3
 }
 
-puts "---- Loading package $tclpython ----"
-package require $tclpython
-set interp [$cmd_interp new]
+puts "---- Loading package tclpython3 ----"
+package require tclpython3
+set interp [python3::interp new]
 puts "OK"
 
 #===============================================================================
@@ -52,4 +33,4 @@ puts "OK"
 
 #===============================================================================
 
-$cmd_interp delete $interp
+python3::interp delete $interp

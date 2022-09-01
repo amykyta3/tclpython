@@ -123,11 +123,7 @@ char* python_eval(py_interp_t *interp, const char *str){
 
         // Get string representation of result
         py_result_str = PyObject_Str(py_result);
-        #if PY_MAJOR_VERSION >= 3
         tmp_str = PyUnicode_AsUTF8(py_result_str);
-        #else
-        tmp_str = PyString_AsString(py_result_str);
-        #endif
 
         // Copy string
         result_str = malloc(sizeof(char)*(strlen(tmp_str)+1));
