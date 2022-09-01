@@ -5,12 +5,11 @@ PKG_VERSION=5.1
 INSTALL_DIR=/usr/lib/tcltk/x86_64-linux-gnu
 
 #===============================================================================
-PYTHON_CONFIG=python3-config
 ifeq ($(shell python3 -c "import sys; print(sys.version_info[0:2] >= (3, 8))"),True)
-#   Py3.8 and newer require the --embed flag
-    PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags --embed)
+    # Py3.8 and newer require the --embed flag
+    PYTHON_CONFIG_LDFLAGS= $(shell python3-config --ldflags --embed)
 else
-    PYTHON_CONFIG_LDFLAGS= $(shell $(PYTHON_CONFIG) --ldflags)
+    PYTHON_CONFIG_LDFLAGS= $(shell python3-config --ldflags)
 endif
 
 BUILD_DIR=build/$(PKG_NAME)
@@ -19,7 +18,7 @@ LIBRARY:= $(PKG_NAME).so.$(PKG_VERSION)
 
 TCL_VERSION=$(shell echo 'puts $\$$tcl_version' | tclsh)
 CFLAGS:= -O2 -Wall -fPIC -DUSE_TCL_STUBS
-CFLAGS+= $(shell $(PYTHON_CONFIG) --cflags)
+CFLAGS+= $(shell python3-config --cflags)
 CFLAGS+= -I/usr/include/tcl$(TCL_VERSION)
 CFLAGS+= -DTCLPYTHON_VERSION=$(PKG_VERSION)
 LDFLAGS:= -shared -s

@@ -119,7 +119,7 @@ char* python_eval(py_interp_t *interp, const char *str){
         result_str = NULL;
     } else {
         PyObject *py_result_str;
-        char *tmp_str;
+        const char *tmp_str;
 
         // Get string representation of result
         py_result_str = PyObject_Str(py_result);
